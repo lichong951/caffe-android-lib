@@ -11,17 +11,15 @@ SNAPPY_ROOT=${PROJECT_DIR}/snappy
 
 pushd "${SNAPPY_ROOT}"
 
-export PATH=$TOOLCHAIN_DIR/bin:$PATH
-export CC=$(find "$TOOLCHAIN_DIR/bin/" -name '*-gcc' -exec basename {} \;)
-export CXX=$(find "$TOOLCHAIN_DIR/bin/" -name '*-g++' -exec basename {} \;)
-
 if [ ! -f configure ]; then
     ./autogen.sh
 fi
 
 ./configure --prefix="$INSTALL_DIR/snappy" --with-gflags=no --host="$(uname -m)"
 make clean
-make -j"${N_JOBS}"
+make -j"${N_JOBS}"\
+    CC="$(find "$TOOLCHAIN_DIR/bin/" -name '*-gcc')" \
+    CXX="$(find "$TOOLCHAIN_DIR/bin/" -name '*-g++')"
 rm -rf "${INSTALL_DIR}/snappy"
 make install
 git clean -fd 2> /dev/null || true
